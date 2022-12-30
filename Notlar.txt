@@ -1,0 +1,79 @@
+MVC ile Adım Adım Proje Geliştirme Detayları
+
+Projeyi oluşturma adımları
+-Create a new project > ASP.NET Web Application(.NET Framework) > MVC
+
+MVC nedir?
+-MVC üç temel yapıdan oluşur;
+  Model: Projenin veritabanına ait entity kavramlarının tanımlandığı kısım.
+  View: Projenin front end,tasarım kısmı.
+  Controller: Projenin back end tarafının kodlandığı kısım.
+
+Controller
+-Back end c# kodları burada yazılır.
+-Controller içindeki sınıflarda metotlar tanımlanır ve bu methodların view tarafında bir karşılığı olmalıdır.
+-Örneğin HomeController.cs adlı bir controller sınıfın varsa, view ksımında da Home adlı bir klasörün olur
+ içinde de HomeController.cs sınıfının içindeki methodlar için cshtml dosyaları olur.
+
+Projeyi default şekliyle çalıştırdığımızda menuler kısmı vardır ve bu menuler view içindeki cshtml dosyalarıdır.
+Sayfa değişse bile sabit kalan kısıma layout alanı denir.
+Sayfa değişince değişen kısma content alanı denir.
+
+Controller'a yeni bir method eklemek.
+-methodu yaz, methodu ActionResult olarak tanımladıysan bir return değeri olmalıdır.
+ return View dedikten sonra methodun isminin üstüne sağ tıkla>add view>use a layout page'e tıkla views altında shared alıtndaki istediğin layoutu seç ekle
+ böylelikle view klasöründe Home altında methodun cshmtl dosyası da oluşmuş oldu.
+
+Projenin back kısmında değişiklik yaparsan projeyi yeniden derlemen gerekir.(Projeyi yeniden çalıştır yani.)
+front end kısmında yaptığınız değişiklikler içinse sadece sayfayı yenilemeniz yeterlidir.
+
+
+Layout, controller tanımlama, view oluşturma
+-Controller klasörüne sağ tıkla>Add>Controller>MVC5 Controller-Empty
+ projemizde yapacağımız her bir menu alanı bir controller olarak tutulmalı
+-Shared klasöründe sağa tıkla>add>view>view adını yaz add de
+ herhangi bir layout kullanmayan view kendisi bir layout olur
+ bir projeyi layout üstünden çalıştırmak için o layoutun bir controller'ı olmalı
+ oluşturduğun layoutu controllerdeki methoda view eklerken layout kullan kısmından seç ve ekle
+ hata almadan çalıştırmak için sayfaları layoutun hangi kısmına getireceğini
+ belirtmen gerekir randerbody ile
+    RazorSyntax kullanırsın, bu işin html tarafında c# komutları kullanmaya yarar.
+    div arasında bir @eklersen RazorSyntax'ı oluşur
+    Yani oluşturduğun layouta aşağıdaki kodu ekle
+         <div> 
+             @RenderBody()
+         </div>
+site title kısmını cshtml dosyasında title etiketi içinde değiştirebilirsin
+
+KATMANLAR
+1-Entity Layer: Projenin sql tablolarının(class'lar) ve sutünların(property'ler) tanımlanacağı kısım.
+2-Data Access Layer: Veri erişim katmanı. CRUD işlemlerinin temeli burdadır.
+3-Business Layer: İş katmanı. Veritabanı işlemlerini gerçekleştirirken şartlar koymak için kullanılır. Kullanıcı tc girerken 11 karakterle sınırlansın vs.
+4-Presentation Layer: Projenin sunum katmanı.
+
+Katman eklemek için: Solution'a sağ tık>Add>New Project>Class Library(.NET Framework)
+
+EntityLayer'da sınıfları tanımlamaya başlayalım tablolar için.
+-Concrete isimli bir klasör oluştur. Somut olarak tuttuğumuz ifadeleri concrete klasöründe tutarız.
+-Concrete klasöründe sınıfları ekle.
+-Property'leri tanımla bunlar tablolardaki sutünlardır. örn: public int ID {get; set; }
+-Sınıflar arası ilişki kuralım.
+   foreign key kullanımı > burda A sınıfının değeri B sınıfında foreign key olarak kullanılacaktır
+     A sınıfına şu satırı ekle> public ICollection<b> degiskenAdi {get; set;}
+     B sınıfına şu satırı ekle> public int aID {get; set;} yani A sınıfının id'sini buraya ekle
+                                public virtual A a {get; set;} yani A sınıfından a diye bir değişken oluşturduk
+ 
+-sutünlara key, kısıtlama ataması bunlara attribute denir
+   key ataması> [Key] yaz property üzerine ve projeye entity framework paketini yükle
+       entity framework paketi yükleme: entity layer sağa tıkla>Manage NuGet Packages> Browse > Entity Framewrok 6> install
+       sonra satırda [Key] üzerine gel using System.Com.. kısmına tıkla, bunları bir defa yap yeterli sonra key için sadece [Key] yaparsın yeterli olur diğer sınıflar için
+   length kısıtı> [StringLength(500)]
+
+-DataAccesLayer'a geçelim
+  veritabanına tabloları yansıtmak için context sınıfını kullanırız 
+  concrete klasörü oluşturup içince context sınıfını ekledik
+  katmanımıza entity framework paketini kurmalıyız
+  context sınıfına DbContext'i extends et, using System.Data.Entity; kütüphanesini ekle
+   public DbSet<c> _c {get; set;} > burdaki c entity layer'daki oluşturduğumuz sınıflar, _c ise veritabanında oluşacak tablonun adı
+  bir başka katmanın sınıfını kullanmak istiyorsan o katmanı referans olarak ekle
+  şöyle> references > add references>projects> ekleyeceğin katmanı seç
