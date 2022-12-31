@@ -77,3 +77,46 @@ EntityLayer'da sınıfları tanımlamaya başlayalım tablolar için.
    public DbSet<c> _c {get; set;} > burdaki c entity layer'daki oluşturduğumuz sınıflar, _c ise veritabanında oluşacak tablonun adı
   bir başka katmanın sınıfını kullanmak istiyorsan o katmanı referans olarak ekle
   şöyle> references > add references>projects> ekleyeceğin katmanı seç
+
+Web.config ayarları
+-Presentation katmanında Web.config dosyası var burası projeyle ilgili bazı yapılandırmaların yapıldığı kısımdır
+  projeyi canlıya taşıma, veritabanı bağlantı adresi, 404 sayfası ayarları, oturum,yetkilendirme ayarları...
+-Bağlantı ayarı yapmak için
+</system.web> <runtime> arasında alttaki kodu ekle
+    	<connectionStrings>
+		<add name="Context" connectionString="data source=LAPTOP-LNMPQIK9;
+			 initial catalog=BenimSiirim; integrated security=true;" providerName="System.Data.SqlClient"/>
+	</connectionStrings>
+  Context:tablolarınınız veritabanına yansıtılacağı sınıfın ismi
+  LAPTOP-LNMPQIK9: local makinedeki server adı
+  BenimSiirim: veritabanı ismi
+  System.Data.SqlClient: sağlayıcı ismi
+  
+  Migration işlemleri 
+  -yazdığımız class'ları veritabanına yansıtmak için kullanırız
+  -yaptığımız işlemleri loglar yani bir yere kaydeder
+  -C# ve sql arasındaki köprüdür
+  -migration ekleme işlem adımları
+   view>other windows> package manager console
+   PM> enable-migrations (default project context sınıfının bağlı olduğu katman olmalı)
+   açılan pencerede constructor'daki false'ı true yap
+   PM> update-database
+  
+-null olabilecek sutün tanımı için sınıfta
+   public int? WriterID {get; set;} diyebiliriz
+
+sonradan migration eklemek
+-PM> add-migration mg1
+-PM> update-database
+
+CRUD işlemlerinin temelini oluşturuyoruz.
+-DataAccesLayer Abstract isimli bir klasör ekle.
+-klasöre interface ekle(IRepository)
+-public interface IRepository<T> {}
+-içine methodlar ekle
+        List<T> List();
+        void Insert(T p);
+        void Delete(T p);
+        void Update(T p);
+
+
